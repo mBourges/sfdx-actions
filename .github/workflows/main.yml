@@ -1,5 +1,5 @@
 name: Develop CI/CD
-description: Runs unit tests, build a package version and deploy into development sandbox.
+# description: Runs unit tests, build a package version and deploy into development sandbox.
 
 on:
   push:
