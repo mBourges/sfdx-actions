@@ -1,0 +1,73 @@
+name: Develop CI/CD
+description: Runs unit tests, build a package version and deploy into development sandbox.
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Create Auth URL to DevHub from secrets
+        run: echo ${{ secrets.SFDX_DEVHUB_URL }} > ./SFDX_DEVHUB_URL.txt
+
+      - name: Restore npm Cache
+        id: cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm
+
+      - name: Install Salesforce CLI
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install sfdx-cli npx
+
+      - name: Update Dependencies
+        run: |
+          npm update sfdx-cli npx
+          npx sfdx-cli --version
+          npx sfdx-cli plugins --core
+
+      - name: Authorize DevHub
+        run: npx sfdx-cli force:auth:sfdxurl:store --sfdxurlfile ./SFDX_DEVHUB_URL.txt --setalias devhub --setdefaultdevhubusername
+
+      - name: Push Source
+        run: npx sfdx-cli force:source:push --targetusername ciorg
+
+      - name: Run Apex Tests
+        run: npx sfdx-cli force:apex:test:run --targetusername ciorg --codecoverage --resultformat human --outputdir ./test-results/apex --wait 20
+
+      - name: Upload .sfdx folder
+        uses: actions/upload-artifact@v2
+        with:
+          name: sfdx-folder
+          path: .sfdx
+
+  Build:
+    name: Delete scratch orgs
+    needs: installation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restore npm Cache
+        id: cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm
+
+      - name: Install Salesforce CLI
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install sfdx-cli npx
+
+      - name: Download .sfdx folder
+        uses: actions/download-artifact@v2
+        with:
+          name: sfdx-folder
+
+      - name: Delete scratch org.
+        run: npx sfdx force:org:delete -u ciorg --noprompt
