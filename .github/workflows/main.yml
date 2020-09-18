@@ -8,7 +8,7 @@ on:
       - master
 
 jobs:
-  Test:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -48,9 +48,9 @@ jobs:
           name: sfdx-folder
           path: .sfdx
 
-  Build:
+  build:
     name: Delete scratch orgs
-    needs: installation
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Restore npm Cache
