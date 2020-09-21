@@ -107,9 +107,6 @@ jobs:
         run: ls -alh
 
       - name: list files
-        run: ls -alh .sfdx
-
-      - name: list files
         run: ls -alh ~/
 
       - name: list files
