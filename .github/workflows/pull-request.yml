@@ -1,0 +1,17 @@
+name: Pull Request CI/CD
+# description: Runs unit tests, build a package version and deploy into development sandbox.
+
+on:
+  push:
+    pull_request
+    paths:
+      - 'force-app/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: list files
+        run: ls -alh
