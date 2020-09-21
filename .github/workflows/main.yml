@@ -38,9 +38,6 @@ jobs:
       - name: working directory
         run: pwd
 
-      - name: sfdx directory
-        run: which sfdx-cli
-
       - name: list files
         run: ls -alh
 
@@ -49,6 +46,10 @@ jobs:
 
       - name: list files
         run: ls -alh
+
+      - name: list files
+        run: ls -alh ~/
+
       # - name: Create Scratch Org
       #   run: npx sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
 
@@ -65,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: sfdx-folder
-          path: .sfdx
+          path: ~/.sfdx
 
   build:
     name: Delete scratch orgs
@@ -92,10 +93,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: sfdx-folder
-          path: ./
 
       - name: list files
         run: ls -alh
+
+      - name: list files
+        run: ls -alh ~/
 
       - name: list orgs
         run: npx sfdx-cli force:org:list
