@@ -112,6 +112,9 @@ jobs:
       - name: list files
         run: ls -alh ~/.sfdx
 
+      - name: list files
+        run: ls -alh /home/runner
+
       - name: list orgs
         run: npx sfdx-cli force:org:list
 
