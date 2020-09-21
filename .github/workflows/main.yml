@@ -27,7 +27,7 @@ jobs:
 
       - name: Install Salesforce CLI
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npm install -g sfdx-cli npx
+        run: npm install sfdx-cli npx
 
       - name: Update Dependencies
         run: |
