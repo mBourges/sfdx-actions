@@ -20,8 +20,10 @@ jobs:
         id: cache
         uses: actions/cache@v1
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm
+          path: |
+            ~/.npm
+            ~/.npm-cache
+          key: ${{ runner.os }}-npm-2
 
       - name: Install Salesforce CLI
         if: steps.cache.outputs.cache-hit != 'true'
@@ -69,9 +71,6 @@ jobs:
       - name: Install Salesforce CLI
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm install sfdx-cli npx
-
-      - name: list orgs
-        run: npx sfdx-cli force:org:list
 
       - name: Download .sfdx folder
         uses: actions/download-artifact@v2
