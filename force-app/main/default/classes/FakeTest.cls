@@ -4,6 +4,7 @@ public with sharing class FakeTest {
     MyIssues issues = new MyIssues();
 
     // this is a test
+    // this is a test2
 
     System.assertNotEquals(null, issues.getMyIssues());
   }
