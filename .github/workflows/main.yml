@@ -83,6 +83,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: sfdx-folder
+          path: ./
 
       - name: list files
         run: ls -alh
