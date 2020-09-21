@@ -35,6 +35,9 @@ jobs:
           npx sfdx-cli --version
           npx sfdx-cli plugins --core
 
+      - name: working directory
+        run: pwd
+
       - name: list files
         run: ls -alh
 
@@ -74,6 +77,9 @@ jobs:
             ~/.npm
             ~/.npm-cache
           key: ${{ runner.os }}-npm-6
+
+      - name: working directory
+        run: pwd
 
       - name: Install Salesforce CLI
         if: steps.cache.outputs.cache-hit != 'true'
