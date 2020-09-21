@@ -65,11 +65,14 @@ jobs:
       # - name: Run Apex Tests
       #   run: npx sfdx-cli force:apex:test:run --targetusername ciorg --codecoverage --resultformat human --outputdir ./test-results/apex --wait 20
 
+      - name: Tar files
+        run: tar -cvf ./sfdx.tar ~/.sfdx
+
       - name: Upload .sfdx folder
         uses: actions/upload-artifact@v2
         with:
           name: sfdx-folder
-          path: ~/.sfdx
+          path: ./sfdx.tar
 
   build:
     name: Delete scratch orgs
@@ -96,7 +99,9 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: sfdx-folder
-          path: ~/.sfdx
+
+      - name: UnTar files
+        run: tar -C ~/.sfdx -xvf sfdx.tar
 
       - name: list files
         run: ls -alh
