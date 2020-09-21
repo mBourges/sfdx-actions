@@ -101,7 +101,7 @@ jobs:
           name: sfdx-folder
 
       - name: UnTar files
-        run: tar -C ~/.sfdx -xvf sfdx.tar
+        run: tar -C ~/ -xvf sfdx.tar
 
       - name: list files
         run: ls -alh
