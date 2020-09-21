@@ -27,28 +27,31 @@ jobs:
 
       - name: Install Salesforce CLI
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npm install -g sfdx-cli
+        run: npm install -g sfdx-cli npx
 
       - name: Update Dependencies
         run: |
-          npm update sfdx-cli
-          sfdx-cli --version
-          sfdx-cli plugins --core
+          npm update sfdx-cli npx
+          npx sfdx-cli --version
+          npx sfdx-cli plugins --core
+
+      - name: list files
+        run: ls -alh
 
       - name: Authorize DevHub
-        run: sfdx-cli force:auth:sfdxurl:store --sfdxurlfile ./SFDX_DEVHUB_URL.txt --setalias devhub --setdefaultdevhubusername
+        run: npx sfdx-cli force:auth:sfdxurl:store --sfdxurlfile ./SFDX_DEVHUB_URL.txt --setalias devhub --setdefaultdevhubusername
 
-      - name: Create Scratch Org
-        run: sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
+      # - name: Create Scratch Org
+      #   run: npx sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
 
-      - name: list orgs
-        run: sfdx-cli force:org:list
+      # - name: list orgs
+      #   run: npx sfdx-cli force:org:list
 
-      - name: Push Source
-        run: sfdx-cli force:source:push --targetusername ciorg
+      # - name: Push Source
+      #   run: npx sfdx-cli force:source:push --targetusername ciorg
 
-      - name: Run Apex Tests
-        run: sfdx-cli force:apex:test:run --targetusername ciorg --codecoverage --resultformat human --outputdir ./test-results/apex --wait 20
+      # - name: Run Apex Tests
+      #   run: npx sfdx-cli force:apex:test:run --targetusername ciorg --codecoverage --resultformat human --outputdir ./test-results/apex --wait 20
 
       - name: Upload .sfdx folder
         uses: actions/upload-artifact@v2
@@ -72,7 +75,7 @@ jobs:
 
       - name: Install Salesforce CLI
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npm install sfdx-cli
+        run: npm install sfdx-cli npx
 
       - name: Download .sfdx folder
         uses: actions/download-artifact@v2
@@ -80,7 +83,7 @@ jobs:
           name: sfdx-folder
 
       - name: list orgs
-        run: sfdx-cli force:org:list
+        run: npx sfdx-cli force:org:list
 
-      - name: Delete scratch org.
-        run: sfdx force:org:delete -u ciorg --noprompt
+      # - name: Delete scratch org.
+      #   run: npx sfdx force:org:delete -u ciorg --noprompt
