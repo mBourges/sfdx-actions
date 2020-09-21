@@ -50,6 +50,9 @@ jobs:
       - name: list files
         run: ls -alh ~/
 
+      - name: list files
+        run: ls -alh ~/.sfdx
+
       # - name: Create Scratch Org
       #   run: npx sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
 
@@ -100,6 +103,9 @@ jobs:
 
       - name: list files
         run: ls -alh ~/
+
+      - name: list files
+        run: ls -alh ~/.sfdx
 
       - name: list orgs
         run: npx sfdx-cli force:org:list
