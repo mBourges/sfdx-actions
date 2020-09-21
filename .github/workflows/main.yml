@@ -23,7 +23,7 @@ jobs:
           path: |
             ~/.npm
             ~/.npm-cache
-          key: ${{ runner.os }}-npm-4
+          key: ${{ runner.os }}-npm-5
 
       - name: Install Salesforce CLI
         if: steps.cache.outputs.cache-hit != 'true'
@@ -65,8 +65,10 @@ jobs:
         id: cache
         uses: actions/cache@v2
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-4
+          path: |
+            ~/.npm
+            ~/.npm-cache
+          key: ${{ runner.os }}-npm-5
 
       - name: Install Salesforce CLI
         if: steps.cache.outputs.cache-hit != 'true'
