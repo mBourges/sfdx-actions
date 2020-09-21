@@ -2,8 +2,7 @@ name: Pull Request CI/CD
 # description: Runs unit tests, build a package version and deploy into development sandbox.
 
 on:
-  push:
-    pull_request
+  pull_request:
     paths:
       - 'force-app/**'
 
