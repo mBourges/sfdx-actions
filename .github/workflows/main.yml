@@ -119,4 +119,4 @@ jobs:
         run: npx sfdx-cli force:org:list
 
       - name: Delete scratch org.
-        run: npx sfdx force:org:delete -u ciorg --noprompt
+        run: npx sfdx-cli force:org:delete -u ciorg --noprompt
