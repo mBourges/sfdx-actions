@@ -6,7 +6,7 @@ on:
     branches:
       - develop
     paths:
-      - force-app/
+      - 'force-app/**'
 
 jobs:
   test:
