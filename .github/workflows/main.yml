@@ -41,6 +41,8 @@ jobs:
       - name: Authorize DevHub
         run: npx sfdx-cli force:auth:sfdxurl:store --sfdxurlfile ./SFDX_DEVHUB_URL.txt --setalias devhub --setdefaultdevhubusername
 
+      - name: list files
+        run: ls -alh
       # - name: Create Scratch Org
       #   run: npx sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
 
