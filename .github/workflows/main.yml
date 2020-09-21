@@ -82,6 +82,9 @@ jobs:
         with:
           name: sfdx-folder
 
+      - name: list files
+        run: ls -alh
+
       - name: list orgs
         run: npx sfdx-cli force:org:list
 
