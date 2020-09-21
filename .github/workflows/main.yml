@@ -53,11 +53,11 @@ jobs:
       - name: list files
         run: ls -alh ~/.sfdx
 
-      # - name: Create Scratch Org
-      #   run: npx sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
+      - name: Create Scratch Org
+        run: npx sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
 
-      # - name: list orgs
-      #   run: npx sfdx-cli force:org:list
+      - name: list orgs
+        run: npx sfdx-cli force:org:list
 
       # - name: Push Source
       #   run: npx sfdx-cli force:source:push --targetusername ciorg
@@ -118,5 +118,5 @@ jobs:
       - name: list orgs
         run: npx sfdx-cli force:org:list
 
-      # - name: Delete scratch org.
-      #   run: npx sfdx force:org:delete -u ciorg --noprompt
+      - name: Delete scratch org.
+        run: npx sfdx force:org:delete -u ciorg --noprompt
