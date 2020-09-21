@@ -38,6 +38,9 @@ jobs:
       - name: working directory
         run: pwd
 
+      - name: sfdx directory
+        run: which sfdx-cli
+
       - name: list files
         run: ls -alh
 
