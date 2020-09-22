@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: org name
-        run: echo $SCRATCH_ORG_ALIAS
+        run: echo ${{ env.SCRATCH_ORG_ALIAS }}
 
       - name: GITHUB_RUN_ID
         run: echo $GITHUB_RUN_ID
