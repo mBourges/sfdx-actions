@@ -8,54 +8,69 @@ on:
     paths:
       - 'force-app/**'
 
+env:
+  DEVHUB_ALIAS: "devhub"
+  SCRATCH_ORG_ALIAS: "ci-$GITHUB_RUN_ID"
+  SFDX_AUTOUPDATE_DISABLE: 1
+  SFDX_DOMAIN_RETRY: 300
+  PACKAGE_NAME: "rpaas-mvp"
+  ORG_CONFIG_FILE_PATH: "$CI_PROJECT_DIR/config/project-scratch.json"
+
+
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - name: org name
+        run: echo $SCRATCH_ORG_ALIAS
 
-      - name: Create Auth URL to DevHub from secrets
-        run: echo ${{ secrets.SFDX_DEVHUB_URL }} > ./SFDX_DEVHUB_URL.txt
+      - name: commit number
+        run: echo $GITHUB_SHA
+      # - uses: actions/checkout@v1
 
-      - name: Restore npm Cache
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.npm
-            ~/.npm-cache
-          key: ${{ runner.os }}-npm-6
+      # - name: Create Auth URL to DevHub from secrets
+      #   run: echo ${{ secrets.SFDX_DEVHUB_URL }} > ./SFDX_DEVHUB_URL.txt
 
-      - name: Install Salesforce CLI
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm install sfdx-cli npx
+      # - name: Restore npm Cache
+      #   id: cache
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: |
+      #       ~/.npm
+      #       ~/.npm-cache
+      #     key: ${{ runner.os }}-npm-6
 
-      - name: Update Dependencies
-        run: |
-          npm update sfdx-cli npx
-          npx sfdx-cli --version
-          npx sfdx-cli plugins --core
+      # - name: Install Salesforce CLI
+      #   if: steps.cache.outputs.cache-hit != 'true'
+      #   run: npm install sfdx-cli npx
 
-      - name: working directory
-        run: pwd
+      # - name: Update Dependencies
+      #   run: |
+      #     npm update sfdx-cli npx
+      #     npx sfdx-cli --version
+      #     npx sfdx-cli plugins --core
 
-      - name: list files
-        run: ls -alh
+      # - name: working directory
+      #   run: pwd
 
-      - name: Authorize DevHub
-        run: npx sfdx-cli force:auth:sfdxurl:store --sfdxurlfile ./SFDX_DEVHUB_URL.txt --setalias devhub --setdefaultdevhubusername
+      # - name: list files
+      #   run: ls -alh
 
-      - name: list files
-        run: ls -alh
+      # - name: Authorize DevHub
+      #   run: npx sfdx-cli force:auth:sfdxurl:store --sfdxurlfile ./SFDX_DEVHUB_URL.txt --setalias devhub --setdefaultdevhubusername
 
-      - name: list files
-        run: ls -alh ~/
+      # - name: list files
+      #   run: ls -alh
 
-      - name: list files
-        run: ls -alh ~/.sfdx
+      # - name: list files
+      #   run: ls -alh ~/
 
-      - name: Create Scratch Org
-        run: npx sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
+      # - name: list files
+      #   run: ls -alh ~/.sfdx
+
+      # - name: Create Scratch Org
+      #   run: npx sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
 
       # - name: Push Source
       #   run: npx sfdx-cli force:source:push --targetusername ciorg
@@ -63,58 +78,58 @@ jobs:
       # - name: Run Apex Tests
       #   run: npx sfdx-cli force:apex:test:run --targetusername ciorg --codecoverage --resultformat human --outputdir ./test-results/apex --wait 20
 
-      - name: Tar files
-        run: tar -cvf ./sfdx.tar ~/.sfdx
+  #     - name: Tar files
+  #       run: tar -cvf ./sfdx.tar ~/.sfdx
 
-      - name: Upload .sfdx folder
-        uses: actions/upload-artifact@v2
-        with:
-          name: sfdx-folder
-          path: ./sfdx.tar
+  #     - name: Upload .sfdx folder
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: sfdx-folder
+  #         path: ./sfdx.tar
 
-  build:
-    name: Delete scratch orgs
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Restore npm Cache
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.npm
-            ~/.npm-cache
-          key: ${{ runner.os }}-npm-6
+  # build:
+  #   name: Delete scratch orgs
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Restore npm Cache
+  #       id: cache
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: |
+  #           ~/.npm
+  #           ~/.npm-cache
+  #         key: ${{ runner.os }}-npm-6
 
-      - name: working directory
-        run: pwd
+  #     - name: working directory
+  #       run: pwd
 
-      - name: Install Salesforce CLI
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm install sfdx-cli npx
+  #     - name: Install Salesforce CLI
+  #       if: steps.cache.outputs.cache-hit != 'true'
+  #       run: npm install sfdx-cli npx
 
-      - name: Download .sfdx folder
-        uses: actions/download-artifact@v2
-        with:
-          name: sfdx-folder
+  #     - name: Download .sfdx folder
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: sfdx-folder
 
-      - name: UnTar files
-        run: tar -C / -xvf sfdx.tar
+  #     - name: UnTar files
+  #       run: tar -C / -xvf sfdx.tar
 
-      - name: list files
-        run: ls -alh
+  #     - name: list files
+  #       run: ls -alh
 
-      - name: list files
-        run: ls -alh ~/
+  #     - name: list files
+  #       run: ls -alh ~/
 
-      - name: list files
-        run: ls -alh ~/.sfdx
+  #     - name: list files
+  #       run: ls -alh ~/.sfdx
 
-      - name: list files
-        run: ls -alh /home/runner
+  #     - name: list files
+  #       run: ls -alh /home/runner
 
-      - name: list orgs
-        run: npx sfdx-cli force:org:list
+  #     - name: list orgs
+  #       run: npx sfdx-cli force:org:list
 
-      - name: Delete scratch org.
-        run: npx sfdx-cli force:org:delete -u ciorg --noprompt
+  #     - name: Delete scratch org.
+  #       run: npx sfdx-cli force:org:delete -u ciorg --noprompt
