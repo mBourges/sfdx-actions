@@ -1,5 +1,4 @@
 name: Pull Request CI/CD
-# description: Runs unit tests, build a package version and deploy into development sandbox.
 
 on:
   pull_request:
@@ -8,11 +7,103 @@ on:
     paths:
       - 'force-app/**'
 
+env:
+  DEVHUB_ALIAS: "devhub"
+  SCRATCH_ORG_ALIAS: "ci-$CI_PIPELINE_ID"
+  PACKAGE_ORG_ALIAS: "ci-package-$CI_PIPELINE_ID"
+  SFDX_AUTOUPDATE_DISABLE: 1
+  SFDX_DOMAIN_RETRY: 300
+  PACKAGE_NAME: "rpaas-mvp"
+  ORG_CONFIG_FILE_PATH: "$CI_PROJECT_DIR/config/project-scratch.json"
+
 jobs:
-  test:
+  sfdx-test:
+    name: Unit Tests in scratch org
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
 
-      - name: list files
-        run: ls -alh
+      - name: Create Auth URL to DevHub from secrets
+        run: echo ${{ secrets.SFDX_DEVHUB_URL }} > ./SFDX_DEVHUB_URL.txt
+
+      - name: Restore npm Cache
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ~/.npm-cache
+          key: ${{ runner.os }}-npm-6
+
+      - name: Install Salesforce CLI
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install sfdx-cli npx
+
+      - name: Update Dependencies
+        run: |
+          npm update sfdx-cli npx
+          npx sfdx-cli --version
+          npx sfdx-cli plugins --core
+
+      - name: Authorize DevHub
+        run: npx sfdx-cli force:auth:sfdxurl:store --sfdxurlfile ./SFDX_DEVHUB_URL.txt --setalias devhub --setdefaultdevhubusername
+
+      - name: Create Scratch Org
+        run: npx sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
+
+      - name: Push Source
+        run: npx sfdx-cli force:source:push --targetusername ciorg
+
+      - name: Run Apex Tests
+        run: npx sfdx-cli force:apex:test:run --targetusername ciorg --codecoverage --resultformat human --outputdir ./test-results/apex --wait 20
+
+      - name: Tar .sfdx folder
+        run: tar -cvf ./sfdx.tar ~/.sfdx
+
+      - name: Upload .sfdx tarball
+        uses: actions/upload-artifact@v2
+        with:
+          name: sfdx-folder
+          path: ./sfdx.tar
+
+  sfdx-build:
+    name: Build & Deploy package check
+    needs: sfdx-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restore npm Cache
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ~/.npm-cache
+          key: ${{ runner.os }}-npm-6
+
+      - name: Install Salesforce CLI
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install sfdx-cli npx
+
+      - name: Download .sfdx tarball
+        uses: actions/download-artifact@v2
+        with:
+          name: sfdx-folder
+
+      - name: Restore .sfdx files
+        run: tar -C / -xvf sfdx.tar
+
+      - name: Create Package Version
+        run: $SFDX_CLI force:package:version:create -p $PACKAGE_NAME -t $CI_COMMIT_SHA -k "$SFDX_INSTALLATION_KEY" -v $DEVHUB_ALIAS -x -w 60
+
+      - name: Create Package Org
+        run: npx sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
+             $SFDX_CLI force:org:create -v $DEVHUB_ALIAS -a $PACKAGE_ORG_ALIAS -f $ORG_CONFIG_FILE_PATH -d 1
+
+    - export PACKAGE_VERSION_ID=$($SFDX_CLI force:data:soql:query --usetoolingapi --query "SELECT Id,SubscriberPackageVersionId FROM Package2Version WHERE Package2.Name = '$PACKAGE_NAME' AND tag = '$CI_COMMIT_SHA' LIMIT 1" -u $DEVHUB_ALIAS --json | jq -j .result.records[0].SubscriberPackageVersionId)
+    - echo "Install Package version - $PACKAGE_VERSION_ID"
+    - $SFDX_CLI force:package:install -u $PACKAGE_ORG_ALIAS -k "$SFDX_INSTALLATION_KEY" --noprompt --package $PACKAGE_VERSION_ID -w 60 -b 60
+
+
+
+
+

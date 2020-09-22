@@ -57,9 +57,6 @@ jobs:
       - name: Create Scratch Org
         run: npx sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
 
-      - name: list orgs
-        run: npx sfdx-cli force:org:list
-
       # - name: Push Source
       #   run: npx sfdx-cli force:source:push --targetusername ciorg
 
