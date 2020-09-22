@@ -10,6 +10,8 @@ public with sharing class FakeTest {
     // this is a test5
     // this is a test6
     // this is a test7
+    // this is a test8
+    // this is a test9
 
     System.assertNotEquals(null, issues.getMyIssues());
   }

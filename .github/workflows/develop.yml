@@ -10,11 +10,11 @@ on:
 
 env:
   DEVHUB_ALIAS: "devhub"
-  SCRATCH_ORG_ALIAS: ci-${{ env.GITHUB_RUN_ID }}
+  SCRATCH_ORG_ALIAS: ci-${GITHUB_RUN_ID}
   SFDX_AUTOUPDATE_DISABLE: 1
   SFDX_DOMAIN_RETRY: 300
   PACKAGE_NAME: "rpaas-mvp"
-  ORG_CONFIG_FILE_PATH: "$CI_PROJECT_DIR/config/project-scratch.json"
+  # ORG_CONFIG_FILE_PATH: "$CI_PROJECT_DIR/config/project-scratch.json"
 
 
 
