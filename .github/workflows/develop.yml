@@ -10,7 +10,7 @@ on:
 
 env:
   DEVHUB_ALIAS: "devhub"
-  SCRATCH_ORG_ALIAS: "ci-$GITHUB_RUN_ID"
+  SCRATCH_ORG_ALIAS: ci-$GITHUB_RUN_ID
   SFDX_AUTOUPDATE_DISABLE: 1
   SFDX_DOMAIN_RETRY: 300
   PACKAGE_NAME: "rpaas-mvp"
@@ -24,6 +24,9 @@ jobs:
     steps:
       - name: org name
         run: echo $SCRATCH_ORG_ALIAS
+
+      - name: GITHUB_RUN_ID
+        run: echo $GITHUB_RUN_ID
 
       - name: commit number
         run: echo $GITHUB_SHA
